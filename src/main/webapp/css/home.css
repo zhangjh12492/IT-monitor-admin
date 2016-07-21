@@ -1,0 +1,27 @@
+body,ul,li,ol,div,p,table,tr,th,td{margin: 0px;padding: 0px;}
+body{font-size: 12px;background-color: #3d3d3d;}
+ul{list-style: none;}
+b{display: block;}
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+.clearfix {
+    *zoom: 1;
+}
+a:hover{text-decoration: none;}
+.fl{float: left;}
+.fr{float: right;}
+.db{display: block;}
+.dn{display: none;}
+.posr{position: relative;}
+.posa{position: absolute;}
+
+/*首页框架*/
+.logo{width: 30px;height: 30px;background: url("../images/login/logo_03.jpg") no-repeat;margin: 8px 0 0 0px;background-size: 130px;background-position: -2px -1px;}
+
+.page-content-wrapper{padding-left:235px;padding-top:46px;}

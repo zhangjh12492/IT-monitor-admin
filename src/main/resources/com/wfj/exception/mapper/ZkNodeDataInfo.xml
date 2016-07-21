@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ZkNodeDataInfo">
+	
+	<sql id="qrySelect">
+		select id id,
+			node_desc nodeDesc,
+			node_ip nodeIp,
+			created_time createdTime,
+			update_time updateTime,
+			root_name rootName,
+			parent_name parentName,
+			node_name nodeName,
+			node_data nodeData,
+			created_time_format createdTimeFormat,
+			node_count nodeCount
+
+	</sql>
+	<insert id="insert" parameterType="ZkNodeDataInfo">
+		insert into zk_node_data_info(
+			id,
+			node_desc,
+			node_ip,
+			created_time,
+			update_time,
+			root_name,
+			parent_name,
+			node_name,
+			node_data,
+			created_time_format,
+			node_count)
+		values(
+			#{id,jdbcType=INTEGER},
+			#{nodeDesc,jdbcType=VARCHAR},
+			#{nodeIp,jdbcType=VARCHAR},
+			#{createdTime,jdbcType=TIMESTAMP},
+			#{updateTime,jdbcType=VARCHAR},
+			#{rootName,jdbcType=VARCHAR},
+			#{parentName,jdbcType=VARCHAR},
+			#{nodeName,jdbcType=VARCHAR},
+			#{nodeData,jdbcType=VARCHAR},
+			#{createdTimeFormat,jdbcType=VARCHAR},
+			#{nodeCount,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 根据parentName查询最近15分钟的节点的数据-->
+	<select id="selectNearestZkData" resultType="ZkNodeDataInfo">
+
+		select created_time createdTime,
+				node_name nodeName,
+				created_time_format createdTimeFormat,
+				node_count nodeCount,
+				parent_name parentName,
+				node_data nodeData
+		from zk_node_data_info
+			where parent_name = #{parentName}
+				  <if test="nodeName!=null and nodeName !=''" >
+					  AND node_name=#{nodeName}
+				  </if>
+				  <![CDATA[
+				  and created_time >=DATE_SUB(now(),INTERVAL 15 MINUTE)
+				  and created_time <=DATE_SUB(now(),INTERVAL 1 MINUTE)
+				  ]]>
+				  GROUP BY created_time_format,node_name
+				  order by created_Time
+
+	</select>
+
+	<!-- 根据parentName查询最近15分钟最近一条节点的所有数据-->
+	<select id="selectNearestZkOneDataByNode" resultType="ZkNodeDataInfo">
+		select created_time createdTime,
+			node_name nodeName,
+			created_time_format createdTimeFormat,
+			node_count nodeCount,
+			node_data nodeData
+		from
+		 	(select * from zk_node_data_info
+			where parent_name = #{parentName}
+			<![CDATA[
+			and created_time >=DATE_SUB(now(),INTERVAL 15 MINUTE)
+			and created_time <=DATE_SUB(now(),INTERVAL 1 MINUTE)
+			]]>
+			order by created_Time desc
+			) z
+		GROUP BY z.node_name
+	</select>
+
+	<!--获取到所有系统五分钟之内存活节点数量 -->
+	<select id="selectSysActiveNodeCount" resultType="ZkNodeDataInfo">
+		select t.parent_name parentName,t.node_count nodeCount FROM
+		(
+			select
+			parent_name ,
+			node_count
+		from zk_node_data_info
+			where created_time >DATE_SUB(now(),INTERVAL 2 MINUTE)
+			order by created_Time desc
+		) t
+			group by t.parent_name
+	</select>
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PcdsSymenu2">
+    <sql id="qrySelect">
+        select id id,
+            pid pid,
+			text text,
+			iconcls iconcls,
+			src src,
+			seq seq
+    </sql>
+
+    <select id="selectById" resultType="com.wfj.sysmanager.entity.PcdsSymenu2">
+        <include refid="qrySelect"/>
+        from PCDS_SYMENU
+        where
+        id=#{id}
+    </select>
+
+    <insert id="insert">
+        insert into PCDS_SYMENU (
+        	id,
+			pid,
+			text,
+            iconcls,
+            src,
+            seq
+            ) values (
+        	#{id,jdbcType=VARCHAR},
+			#{pid,jdbcType=VARCHAR},
+			#{text,jdbcType=VARCHAR},
+			#{iconcls,jdbcType=VARCHAR},
+			#{src,jdbcType=VARCHAR},
+			#{seq,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="updateById">
+        update PCDS_SYMENU
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pid != null">
+                pid=#{pid},
+            </if>
+            <if test="text != null">
+                text=#{text},
+            </if>
+            <if test="iconcls != null">
+                iconcls=#{iconcls},
+            </if>
+            <if test="src != null">
+                src=#{src},
+            </if>
+            <if test="seq != null">
+                seq=#{seq},
+            </if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from PCDS_SYMENU where id=#{id}
+    </delete>
+
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="pid != null">
+                and pid=#{pid}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="com.wfj.sysmanager.entity.PcdsSymenu2">
+        <include refid="qrySelect"/>
+        from PCDS_SYMENU
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYMENU
+        <include refid="dynamicWhere"/>
+    </select>
+
+</mapper>

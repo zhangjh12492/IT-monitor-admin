@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="MailConfigInfo">
+
+
+        <sql id="qrySelect">
+                select id id,
+                mail_server mailServer,
+                mail_sender mailSender,
+                mail_nick_name mailNickName,
+                mail_user_name mailUserName,
+                mail_password mailPassword,
+                used_status usedStatus
+        </sql>
+
+        <select id="selectAllMailConfig" resultType="MailConfigInfo" >
+
+        </select>
+
+        <insert id="insert" parameterType="MailConfigInfo" >
+                insert into mail_config_info(mail_server,mail_sender,mail_nick_name,mail_user_name,mail_password,used_status)
+                values(#{mailServer},#{mailSender},#{mailNickName},#{mailUserName},#{mailPassword},#{usedStatus})
+        </insert>
+        <delete id="deleteById">
+                delete from mail_config_info where id=#{id}
+        </delete>
+        <update id="updateById">
+                update mail_config_info
+                <set>
+                        <if test="mailServer != null">
+                                mail_server=#{mailServer},
+                        </if>
+                        <if test="mailSender != null">
+                                mail_sender=#{mailSender},
+                        </if>
+                        <if test="mailNickName != null">
+                                mail_nick_name=#{mailNickName},
+                        </if>
+                        <if test="mailUserName != null">
+                                mail_user_name=#{mailUserName},
+                        </if>
+                        <if test="mailPassword != null">
+                                mail_password=#{mailPassword},
+                        </if>
+                        <if test="usedStatus != null">
+                                used_status=#{usedStatus},
+                        </if>
+                </set>
+                where id=#{id}
+        </update>
+
+
+        <sql id="dynamicWhere">
+                <trim prefix="where" prefixOverrides="and | or">
+                        <if test="id != null">
+                                and id=#{id}
+                        </if>
+                </trim>
+        </sql>
+
+        <sql id="dynamicOrderBy">
+                <trim prefix=" order by ">
+                        ${orderBy}
+                </trim>
+        </sql>
+        <select id="selectByCond" resultType="MailConfigInfo">
+                <include refid="qrySelect"/>
+                from mail_config_info
+                <include refid="dynamicWhere"/>
+                <include refid="dynamicOrderBy"/>
+        </select>
+        <select id="selectCountByCond" resultType="Integer">
+                select count(1) as kk
+                from mail_config_info
+                <include refid="dynamicWhere"/>
+        </select>
+
+        <select id="selectMailCountByUsedStatus" resultType="java.lang.Integer">
+                select count(id) from mail_config_info
+                <trim prefix="where" prefixOverrides="and | or">
+                        <if test="usedStatus != null">
+                                and used_status=#{usedStatus}
+                        </if>
+                </trim>
+        </select>
+
+        <!--查询所有的可以使用的邮箱配置 -->
+        <select id="selectMailInfoByUsedStatus" resultType="MailConfigInfo">
+                <include refid="qrySelect"/> from mail_config_info
+                <trim prefix="where" prefixOverrides="and | or">
+                        <if test="usedStatus != null">
+                                and used_status=#{usedStatus}
+                        </if>
+                </trim>
+        </select>
+</mapper>

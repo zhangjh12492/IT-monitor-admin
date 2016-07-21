@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PcdsSyuser2">
+    <sql id="qrySelect">
+       <![CDATA[ select id,
+             name,
+             password,
+             user_name userName,
+             email,
+             tel
+       ]]>
+    </sql>
+
+    <select id="selectById" resultType="com.wfj.sysmanager.entity.PcdsSyuser2">
+        <include refid="qrySelect"/>
+        from PCDS_SYUSER
+        where
+        id=#{id}
+    </select>
+
+    <insert id="insert">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into PCDS_SYUSER (
+        name,
+        password,
+        user_Name,
+        email,
+        tel
+        ) values (
+        #{name},
+        #{password},
+        #{userName},
+        #{email},
+        #{tel}
+        )
+    </insert>
+
+    <update id="updateById">
+        update PCDS_SYUSER
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="userName != null">
+                user_name=#{userName},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="tel != null">
+                tel=#{tel},
+            </if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from PCDS_SYMENU where id=#{id}
+    </delete>
+
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="name != null">
+                and name=#{name}
+            </if>
+            <if test="password != null">
+                and password=#{password}
+            </if>
+            <if test="userName != null">
+                and user_Name=#{userName}
+            </if>
+            <if test="email != null">
+                and email=#{email}
+            </if>
+            <if test="tel != null">
+                and tel=#{tel}
+            </if>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="com.wfj.sysmanager.entity.PcdsSyuser2">
+        <include refid="qrySelect"/>
+        from PCDS_SYUSER
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYUSER
+        <include refid="dynamicWhere"/>
+    </select>
+
+</mapper>

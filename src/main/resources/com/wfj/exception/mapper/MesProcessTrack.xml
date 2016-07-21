@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MesProcessTrack">
+    <sql id="qrySelect">
+        select id id,
+            user_id userId,
+			err_id errId,
+			sys_code sysCode,
+			process_status processStatus,
+			created_time createdTime,
+			description description
+    </sql>
+
+    <select id="selectById" resultType="MesProcessTrack">
+        <include refid="qrySelect"/>
+        from mes_process_track
+        where
+        id=#{id}
+    </select>
+
+	<select id="selectByErrId" resultType="MesProcessTrack">
+        <include refid="qrySelect"/>
+        from mes_process_track
+        where
+        err_id=#{errId}
+        <include refid="dynamicOrderBy"/>
+    </select>
+    <select id="selectCountByErrId" resultType="java.lang.Integer">
+        select count(1) as kk
+        from mes_process_track
+        where 
+        err_id=#{errId}
+    </select>
+    
+    
+
+    <insert id="insert">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into mes_process_track (
+			user_id,
+			err_id,
+            sys_code,
+			process_status,
+			created_time,
+			description
+            ) values (
+			#{userId},
+			#{errId},
+            #{sysCode},
+			#{processStatus},
+			#{createdTime},
+			#{description}
+        )
+    </insert>
+
+    <update id="updateById">
+        update mes_process_track
+        <set>
+            <if test="userId != null">
+                user_id=#{userId},
+            </if>
+            <if test="errId != null">
+                err_id=#{errId},
+            </if>
+            <if test="errId != null">
+                sys_code=#{sysCode},
+            </if>
+            <if test="processStatus != null">
+                process_status=#{processStatus},
+            </if>
+            <if test="createdTime != null">
+                created_time=#{createdTime},
+            </if>
+            <if test="description != null">
+                description=#{description},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from mes_process_track where id=#{id}
+    </delete>
+
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="errId != null">
+                and err_id=#{errId}
+            </if>
+            <if test="userId != null">
+                and user_id=#{userId}
+            </if>
+            <if test="processStatus != null">
+                and process_status=#{processStatus}
+            </if>
+            <if test="description != null">
+                and description=#{description}
+            </if>
+            <if test="createdTime != null">
+                and created_time=#{createdTime}
+            </if>
+            <if test="sysCode != null and sysCode !=''">
+                and sys_code =#{sysCode}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="MesProcessTrack">
+        <include refid="qrySelect"/>
+        from mes_process_track
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+    
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from mes_process_track
+        <include refid="dynamicWhere"/>
+    </select>
+
+
+    <select id="selectByCondGroupErrId" resultType="MesProcessTrack">
+        select id,
+            user_id userId,
+			err_id errId,
+            sys_code sysCode,
+			process_status processStatus,
+			created_time createdTime,
+			description description
+        from mes_process_track
+        where id in
+      	(select max(id) id from mes_process_track
+        <include refid="dynamicWhere"/>
+        group by err_id
+        )
+        <include refid="dynamicOrderBy"/>
+    </select>
+    <select id="selectCountByCondGroupErrId" resultType="Integer">
+        select count(1) as kk
+        from (
+        	select 1 from  mes_process_track
+        	<include refid="dynamicWhere"/>
+        	group by err_id
+        	) a
+        
+    </select>
+</mapper>

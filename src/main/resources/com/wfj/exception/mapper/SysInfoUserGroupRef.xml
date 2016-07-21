@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SysInfoUserGroupRef">
+    <sql id="qrySelect">
+        select id id,
+			sys_info_id sysInfoId,
+			user_group_id userGroupId
+    </sql>
+
+    <select id="selectById" resultType="SysInfoUserGroupRef">
+        <include refid="qrySelect"/>
+        from sys_info_user_group_ref
+        where
+        id=#{id}
+    </select>
+
+    <insert id="insert">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into sys_info_user_group_ref (
+        	id,
+			user_group_id,
+			sys_info_id
+            ) values (
+        	#{id,jdbcType=INTEGER},
+			#{userGroupId,jdbcType=INTEGER},
+			#{sysInfoId,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="updateById">
+        update sys_info_user_group_ref
+        <set>
+            <if test="userGroupId != null">
+                user_group_id=#{userGroupId}
+            </if>
+            <if test="userInfoId != null">
+                user_info_id=#{userInfoId}
+            </if>
+            <if test="id != null">
+                id=#{id}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from sys_info_user_group_ref where id=#{id}
+    </delete>
+
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="userGroupId != null">
+                and user_group_id=#{userGroupId}
+            </if>
+            <if test="userInfoId != null">
+                and user_info_id=#{userInfoId}
+            </if>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy$}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="SysInfoUserGroupRef">
+        <include refid="qrySelect"/>
+        from sys_info_user_group_ref
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from sys_info_user_group_ref
+        <include refid="dynamicWhere"/>
+    </select>
+
+    <select id="selectUsersByGroupid" resultType="com.wfj.exception.dal.vo.SysInfoUserGroupVo">
+        select uguir.id,
+            ui.id userInfoId,
+            name name,
+            user_name userName,
+            tel tel,
+            email email,
+            ug.id userGroupId,
+            group_name groupName
+        from user_group_user_info_ref uguir
+        left join PCDS_SYUSER ui on uguir.user_info_id=ui.id
+        left join user_group ug on uguir.user_group_id=ug.id
+        where
+          uguir.user_group_id=#{id}
+    </select>
+    <select id="selectUsersCountByGroupid" resultType="java.lang.Integer">
+        select count(1)
+        from user_group_user_info_ref uguir
+        left join PCDS_SYUSER ui on uguir.user_info_id=ui.id
+        left join user_group ug on uguir.user_group_id=ug.id
+        where
+          uguir.user_group_id=#{id}
+    </select>
+
+    <select id="selectGroupBySysid" resultType="com.wfj.exception.dal.vo.SysInfoUserGroupVo">
+        select siugr.id,
+            si.sys_code sysCode,
+            si.sys_desc sysDesc,
+            ug.id userGroupId,
+            group_name groupName
+        from sys_info_user_group_ref siugr
+        left join sys_info si on siugr.sys_info_id=si.id
+        left join user_group ug on siugr.user_group_id=ug.id
+        where
+          siugr.sys_info_id=#{id}
+    </select>
+    <select id="selectGroupCountBySysid" resultType="java.lang.Integer">
+        select count(1) kk
+        from sys_info_user_group_ref siugr
+        left join sys_info si on siugr.sys_info_id=si.id
+        left join user_group ug on siugr.user_group_id=ug.id
+        where
+          siugr.sys_info_id=#{id}
+    </select>
+
+    <select id="getNotExistGroup" resultType="UserGroup">
+        select ug.id id,
+            ug.group_name groupName,
+            ug.group_desc groupDesc
+        from user_group ug
+            left join sys_info_user_group_ref siugr on ug.id=siugr.user_group_id and siugr.sys_info_id=#{sysInfoId}
+        where siugr.user_group_id is null
+    </select>
+
+    <select id="getNotExistGroupCount" resultType="Integer">
+        select count(1) kk
+        from user_group ug
+            left join sys_info_user_group_ref siugr on ug.id=siugr.sys_info_id and siugr.user_group_id=#{sysInfoId}
+        where siugr.user_group_id is null
+    </select>
+
+
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="Syuser">
+    <sql id="qrySelect">
+       <![CDATA[ select id,
+             name,
+             password,
+             createdatetime,
+             modifydatetime,
+             user_name userName,
+             email,
+             tel
+       ]]>      
+    </sql>
+
+    <select id="selectById" resultType="Syuser">
+        <include refid="qrySelect"/>
+        from PCDS_SYUSER
+        where
+        id=#{id}
+    </select>
+
+    <insert id="insert">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into user_info (
+			name,
+			password,
+			createdatetime,
+			modifydatetime,
+			user_Name,
+			email,
+			tel
+            ) values (
+			#{name},
+			#{password},
+			#{createdatetime},
+			#{modifydatetime},
+			#{userName},
+			#{email},
+			#{tel}
+        )
+    </insert>
+
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="name != null">
+                and name=#{name}
+            </if>
+            <if test="password != null">
+                and password=#{password}
+            </if>
+            <if test="createdatetime != null">
+                and createdatetime=#{createdatetime}
+            </if>
+            <if test="modifydatetime != null">
+                and modifydatetime=#{modifydatetime}
+            </if>
+            <if test="userName != null">
+                and user_Name=#{userName}
+            </if>
+            <if test="email != null">
+                and email=#{email}
+            </if>
+            <if test="tel != null">
+                and tel=#{tel}
+            </if>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="Syuser">
+        <include refid="qrySelect"/>
+        from PCDS_SYUSER
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYUSER
+        <include refid="dynamicWhere"/>
+    </select>
+
+    <select id="getNotExistUser" resultType="Syuser">
+        select ui.id id,
+			ui.name name,
+			ui.user_Name userName,
+			ui.tel tel,
+			ui.email email
+        from PCDS_SYUSER ui
+        left join user_group_user_info_ref uguir on ui.id=uguir.user_info_id and uguir.user_group_id=#{groupId}
+        where uguir.user_info_id is null
+    </select>
+
+    <select id="getNotExistUserCount" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYUSER ui
+        left join user_group_user_info_ref uguir on ui.id=uguir.user_info_id and uguir.user_group_id=#{groupId}
+        where uguir.user_info_id is null
+    </select>
+    
+    <!-- 根据系统code获取此系统下关联的所有需要发送信息的用户 -->
+    <select id="getUserBySysCodeSendMes" resultType="Syuser">
+	    select * from PCDS_SYUSER ur
+		inner join user_group_user_info_ref ug 
+		on(ur.id=ug.user_info_id)
+		inner join sys_info_user_group_ref sg
+		on(ug.user_group_id=sg.user_group_id
+		 and sg.sys_info_id =(select id from sys_info where sys_code=#{code} ))
+    </select>
+
+</mapper>

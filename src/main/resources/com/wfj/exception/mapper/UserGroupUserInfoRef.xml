@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserGroupUserInfoRef">
+    <sql id="qrySelect">
+        select id id,
+			user_group_id userGroupId,
+			user_info_id userInfoId,
+			user_type userType
+    </sql>
+
+    <select id="selectById" resultType="UserGroupUserInfoRef">
+        <include refid="qrySelect"/>
+        from user_group_user_info_ref
+        where
+        id=#{id}
+    </select>
+
+    <insert id="insert">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into user_group_user_info_ref (
+        	id,
+			user_group_id,
+			user_info_id,
+            user_type
+            ) values (
+        	#{id,jdbcType=INTEGER},
+			#{userGroupId,jdbcType=INTEGER},
+			#{userInfoId,jdbcType=INTEGER},
+			#{userType,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="updateById">
+        update user_group_user_info_ref
+        <set>
+            <if test="userGroupId != null">
+                user_group_id=#{userGroupId}
+            </if>
+            <if test="userType != null">
+                user_type=#{userType}
+            </if>
+            <if test="userInfoId != null">
+                user_info_id=#{userInfoId}
+            </if>
+            <if test="id != null">
+                id=#{id}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from user_group_user_info_ref where id=#{id}
+    </delete>
+
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="userGroupId != null">
+                and user_group_id=#{userGroupId}
+            </if>
+            <if test="userInfoId != null">
+                and user_info_id=#{userInfoId}
+            </if>
+            <if test="userType != null">
+                and user_type=#{userType}
+            </if>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy$}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="UserGroupUserInfoRef">
+        <include refid="qrySelect"/>
+        from user_group_user_info_ref
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from user_group_user_info_ref
+        <include refid="dynamicWhere"/>
+    </select>
+
+    <select id="selectUsersByGroupid" resultType="com.wfj.exception.dal.vo.UserGroupUserInfoVo">
+        select uguir.id,
+            ui.id userInfoId,
+            name name,
+            user_name userName,
+            tel tel,
+            email email,
+            ug.id userGroupId,
+            group_name groupName,
+            user_type userType
+        from user_group_user_info_ref uguir
+        left join PCDS_SYUSER ui on uguir.user_info_id=ui.id
+        left join user_group ug on uguir.user_group_id=ug.id
+        where
+          uguir.user_group_id=#{id}
+    </select>
+    <select id="selectUsersCountByGroupid" resultType="java.lang.Integer">
+        select count(1)
+        from user_group_user_info_ref uguir
+        left join PCDS_SYUSER ui on uguir.user_info_id=ui.id
+        left join user_group ug on uguir.user_group_id=ug.id
+        where
+          uguir.user_group_id=#{id}
+    </select>
+
+</mapper>

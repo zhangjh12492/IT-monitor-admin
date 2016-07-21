@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="MesAllProcessReq">
+	
+	
+	<sql id="qrySelect">
+		select id id,
+			code code,
+			warn_count warnCount,
+			error_count errorCount,
+			created_time createdTime
+			
+	</sql>
+	
+	<sql id="start_endTimeWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="startTime !=null and startTime !='' ">
+                and w.created_time >= date_format(#{startTime}, '%Y%m%d%H%i%s')
+            </if>
+            <if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and w.created_time <= date_format(#{endTime}, '%Y%m%d%H%i%s') ]]>	
+			</if>
+        </trim>
+    </sql>
+	
+	<!-- 按小时统计 -->
+	<select id="selectOneHourLine" resultType="MesAllProcessReq" >
+		
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H:%i'),':00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			<include refid="start_endTimeWhere"></include>
+			group by w.created_time
+			
+		
+	</select>
+	<select id="selectOneHourPie" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H:%i'),':00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			<include refid="start_endTimeWhere"></include>
+			group by w.code
+	</select>
+	
+	<!-- 按日统计 -->
+	<select id="selectOneDayLine" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H'),':00:00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			<include refid="start_endTimeWhere"></include>
+			group by w.created_time
+	</select>
+	<select id="selectOneDayPie" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H'),':00:00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			<include refid="start_endTimeWhere"></include>
+			group by w.code
+	</select>
+	
+	<!-- 按周统计 -->
+	<select id="selectOneWeekLine" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d'),' 00:00:00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			<include refid="start_endTimeWhere"></include>
+			group by w.created_time
+	</select>
+	<select id="selectOneWeekPie" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d'),' 00:00:00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			<include refid="start_endTimeWhere"></include>
+			group by w.code
+	</select>
+	
+	
+	<!-- 按月统计 -->
+	<select id="selectOneMonthLine" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d'),' 00:00:00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			group by w.created_time
+	</select>
+	<select id="selectOneMonthPie" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d'),' 00:00:00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			group by w.code
+	</select>
+	
+	
+	<!-- 按季度统计 -->
+	<select id="selectOneQuarterLine" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H:%i'),':00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			group by w.created_time
+	</select>
+	<select id="selectOneQuarterPie" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H:%i'),':00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			group by w.code
+	</select>
+	
+	<!-- 按半年统计 -->
+	<select id="selectHalfYearLine" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H:%i'),':00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			group by w.created_time
+	</select>
+	<select id="selectHalfYearPie" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H:%i'),':00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+			) w
+			group by w.code
+	</select>
+	
+	<!-- 按一年统计 -->
+	<select id="selectOneYearLine" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H:%i'),':00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+		and (process_status is null or process_status='')
+			) w
+			group by w.created_time
+	</select>
+	<select id="selectOneYearPie" resultType="MesAllProcessReq" >
+		select w.id id ,w.code code ,sum(w.warn_count) warnCount,sum(w.error_count) errorCount,date_format(w.created_time,'%Y-%m-%d %H:%i:%s') createdTime
+		from 
+			(
+			select id,code,warn_count,error_count,str_to_date(concat(date_format(created_time,'%Y-%m-%d %H:%i'),':00'),'%Y-%c-%d %H:%i:%s') created_time from mes_all_process_req
+			where 
+			<if test="codeType!=null and codeType=='sys'">
+				code=#{code} 
+			</if>
+			<if test="codeType!=null and codeType=='busi'">
+				length(code)=5 and left(code,2)=#{code}
+			</if>
+			<if test="codeType!=null and codeType=='err'">
+				length(code)=8 and left(code,5)=#{code}
+			</if>
+			<if test="startTime !=null and startTime !='' ">
+				and created_time >= #{startTime} 
+			</if>
+			<if test="endTime !=null and endTime !='' ">
+				<![CDATA[	and created_time <= #{endTime} ]]>	
+			</if>
+			and (process_status is null or process_status='')
+		) w
+			group by w.code
+	</select>
+	
+	<!-- 根据sysCode进行分组查询异常信息处理结果 -->
+	<select id="selectProcessMesOrderBySysCode" resultType="MesAllProcessReq">
+		select p.id id ,p.code code,p.warn_count warnCount,p.error_count errorCount,p.created_time createdTime,process_status processStatus
+		from (select * from mes_all_process_req where length(code)=2 order by created_time desc ) p
+		group by code
+	</select>
+	
+	<!-- 根据sysCode查询最近插入的一条系统的统计结果 -->
+	<select id="selectOneTopProcessMesBySysCode" resultType="MesAllProcessReq">
+		select id id ,code code,warn_count warnCount,error_count errorCount,created_time createdTime,process_status processStatus
+		from mes_all_process_req
+		where code=#{code}
+		<if test="processStatus!=null and processStatus!=''">
+			and process_status=#{processStatus}
+		</if>
+		<if test="processStatus==null or processStatus==''">
+			and (process_status is null or process_status='')
+		</if>
+		order by created_time desc limit 0,1
+	</select>
+	
+	<!-- 根据sysCode查询最近的统计的一条业务的数量-->
+	<select id="selectBusiProcessMesBySysCode" resultType="MesAllProcessReq">
+		select p.id id ,p.code code,p.warn_count warnCount,p.error_count errorCount,p.created_time createdTime,process_status processStatus
+	from (select * from mes_all_process_req where length(code)=5 and left(code,2)=#{code}
+	<if test="processStatus!=null and processStatus!=''">
+		and process_status=#{processStatus}
+	</if>
+	<if test="processStatus==null or processStatus==''">
+		and (process_status is null or process_status='')
+	</if>
+	order by created_time desc ) p
+	group by code
+	</select>
+	
+	<!-- 根据系统code查询最近插入的一条数据 -->
+	<select id="selectLatelyBySysCode" resultType="MesAllProcessReq">
+		<include refid="qrySelect" />
+		from mes_all_process_req
+		where code = #{code}
+		<if test="processStatus!=null and processStatus!=''">
+			and process_status=#{processStatus}
+		</if>
+		<if test="processStatus==null or processStatus==''">
+			and (process_status is null or process_status='')
+		</if>
+		order by created_time desc limit 0,1
+	</select>
+
+	<select id="findAllMesProcessGroupBySysCodeToSms" resultType="MesAllProcessReq">
+		select p.id id ,p.code code,p.warn_count warnCount,p.error_count errorCount,p.created_time createdTime,process_status processStatus
+		from (
+		select * from mes_all_process_req
+		where length(code)=2
+		<if test="processStatus!=null and processStatus!=''">
+			and process_status=#{processStatus}
+		</if>
+		<if test="processStatus==null or processStatus==''">
+			and (process_status is null or process_status='')
+		</if>
+		order by created_time desc
+		) p
+		group by code
+	</select>
+</mapper>

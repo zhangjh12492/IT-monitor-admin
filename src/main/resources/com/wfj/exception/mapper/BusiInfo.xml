@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BusiInfo">
+	
+
+	<sql id="qrySelect">
+		select id id,
+			busi_code busiCode,
+			busi_desc busiDesc,
+			sys_id sysId
+	</sql>
+	
+	<select id="selectAllBusi" resultType="BusiInfo" >
+		select b.id id,b.busi_code busiCode,b.busi_desc busiDesc,b.sys_id sysId from busi_info b inner join sys_info s on(b.sys_id=s.id)  
+		where 1=1
+		<if test="sysId!=null and sysId != ''">
+			and sys_id = #{sysId}
+		</if>
+	</select>
+	
+	<select id="getBusiInfoBySysBusiCode" resultType="BusiInfo">
+		select id id,
+			busi_code busiCode,
+			busi_desc busiDesc,
+			sys_id sysId
+		from busi_info where sys_id=(select id from sys_info where sys_code=#{sysCode}) and busi_code=#{busiCode}
+	</select>
+	
+	<select id="selectBusiBySysIdAndBusiCode" resultType="BusiInfo">
+		<include refid="qrySelect" /> from busi_info where sys_id=#{sysId} and busi_code=#{busiCode}
+	</select>
+	
+	<insert id="insert" parameterType="BusiInfo" >
+		insert into busi_info(busi_code,busi_desc,sys_id) 
+		values(#{busiCode},#{busiDesc},#{sysId})
+	</insert>
+	<delete id="deleteById">
+		delete from busi_info where id=#{id}
+	</delete>
+	<update id="updateById">
+		update busi_info
+		<set>
+			<if test="busiCode != null">
+				busi_code=#{busiCode},
+			</if>
+			<if test="busiDesc != null">
+				busi_desc=#{busiDesc},
+			</if>
+			<if test="bysId != null">
+				sys_id=#{sysId},
+			</if>
+
+		</set>
+		where id=#{id}
+	</update>
+
+
+	<sql id="dynamicWhere">
+		<trim prefix="where" prefixOverrides="and | or">
+			<if test="id != null">
+				and id=#{id}
+			</if>
+			<if test="sysId != null">
+				and sys_id=#{sysId}
+			</if>
+			<if test="busiCode != null">
+				and busi_code=#{busiCode}
+			</if>
+
+		</trim>
+	</sql>
+
+	<sql id="dynamicOrderBy">
+		<trim prefix=" order by ">
+			${orderBy}
+		</trim>
+	</sql>
+	<select id="selectByCond" resultType="BusiInfo">
+		<include refid="qrySelect"/>
+		from busi_info
+		<include refid="dynamicWhere"/>
+		<include refid="dynamicOrderBy"/>
+	</select>
+	<select id="selectCountByCond" resultType="Integer">
+		select count(1) as kk
+		from busi_info
+		<include refid="dynamicWhere"/>
+	</select>
+
+	<select id="findBusiInfoByCondition" resultType="BusiInfo">
+		<include refid="qrySelect"></include>
+		from busi_info
+		<include refid="dynamicWhere"></include>
+	</select>
+</mapper>

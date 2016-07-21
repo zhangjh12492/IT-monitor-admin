@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PcdsSyroleSyresources">
+    <sql id="qrySelect">
+        select id id,
+			role_id roleId,
+			menu_id menuId
+    </sql>
+
+    <select id="selectById" resultType="com.wfj.sysmanager.entity.PcdsSyroleSyresources">
+        <include refid="qrySelect"/>
+        from PCDS_SYROLE_SYRESOURCES
+        where
+        id=#{id}
+    </select>
+
+    <insert id="insert">
+        insert into PCDS_SYROLE_SYRESOURCES (
+        	id,
+			role_id,
+			resources_id
+            ) values (
+        	#{id,jdbcType=VARCHAR},
+			#{roleId,jdbcType=VARCHAR},
+			#{resourcesId,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="updateById">
+        update PCDS_SYROLE_SYRESOURCES
+        <set>
+            <if test="userGroupId != null">
+                user_group_id=#{userGroupId}
+            </if>
+            <if test="userType != null">
+                user_type=#{userType}
+            </if>
+            <if test="userInfoId != null">
+                user_info_id=#{userInfoId}
+            </if>
+            <if test="id != null">
+                id=#{id}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from PCDS_SYROLE_SYRESOURCES where id=#{id}
+    </delete>
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="roleId != null">
+                and role_id=#{roleId}
+            </if>
+            <if test="menuId != null">
+                and menu_id=#{menuId}
+            </if>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy$}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="com.wfj.sysmanager.entity.PcdsSyroleSyresources">
+        <include refid="qrySelect"/>
+        from PCDS_SYROLE_SYRESOURCES
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYROLE_SYRESOURCES
+        <include refid="dynamicWhere"/>
+    </select>
+
+    <select id="selectResByRoleid" resultType="com.wfj.sysmanager.dto.RoleResDto">
+        select psy.ID id,
+            psy.ROLE_ID roleId,
+            psy.resources_id resId,
+            ps.TEXT resName,
+            ps2.TEXT parentResName,
+            pr.TEXT roleName
+        from PCDS_SYROLE_SYRESOURCES psy
+        left join PCDS_SYRESOURCES ps on psy.resources_id = ps.id
+        left join PCDS_SYRESOURCES ps2 on ps.pid = ps2.id
+        left join PCDS_SYROLE pr on psy.role_id = pr.id
+        where
+          psy.ROLE_ID=#{id}
+    </select>
+    <select id="selectResCountByRoleid" resultType="java.lang.Integer">
+        select count(1) as kk
+        from PCDS_SYROLE_SYRESOURCES psy
+        left join PCDS_SYRESOURCES ps on psy.resources_id = ps.id
+        left join PCDS_SYRESOURCES ps2 on ps.pid = ps2.id
+        left join PCDS_SYROLE pr on psy.role_id = pr.id
+        where
+          psy.ROLE_ID=#{id}
+    </select>
+
+    <select id="getNotExistRes" resultType="com.wfj.sysmanager.dto.RoleResDto">
+        select ps.id id,
+            ps.text resName,
+            ps.src src,
+            ps_2.TEXT parentResName
+        from PCDS_SYRESOURCES ps
+        left join PCDS_SYRESOURCES ps_2 on ps.PID=ps_2.ID
+        left join PCDS_SYROLE_SYRESOURCES pss on ps.id=pss.resources_id and pss.ROLE_ID=#{groupId}
+        where pss.resources_id is null
+        order by ps_2.TEXT
+    </select>
+
+    <select id="getNotExistResCount" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYRESOURCES ps
+        left join PCDS_SYRESOURCES ps_2 on ps.PID=ps_2.ID
+        left join PCDS_SYROLE_SYRESOURCES pss on ps.id=pss.resources_id and pss.ROLE_ID=#{groupId}
+        where pss.resources_id is null
+    </select>
+
+
+</mapper>

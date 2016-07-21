@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="MesEarlyWarnInfo">
+
+	<sql id="qrySelect">
+        select id id,
+		description description,
+		flag flag,
+		status status,
+		send_type sendType,
+		warn_count_min warnCountMin,
+		warn_count_max warnCountMax,
+		error_count_min errorCountMin,
+		error_count_max errorCountMax,
+		sys_id sysId,
+		busi_id busiId,
+		sys_child_active_threshold_max_count sysChildActiveThresholdMaxCount,
+		sys_child_active_threshold_min_count sysChildActiveThresholdMinCount,
+		sys_req_apdex_threshold_max sysReqApdexThresholdMax,
+		sys_req_apdex_threshold_min sysReqApdexThresholdMin
+    </sql>
+	
+	<sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy}
+        </trim>
+    </sql>
+    <select id="selectByCond" resultType="MesEarlyWarnInfo">
+        <include refid="qrySelect"/>
+        from mes_early_warn_info
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from mes_early_warn_info
+        <include refid="dynamicWhere"/>
+    </select>
+    
+    <!-- 根据系统code查询此系统的预警配置信息 -->
+    <select id="selectBySysCode" resultType="MesEarlyWarnInfo">
+    	<include refid="qrySelect" />
+    	from mes_early_warn_info
+    	where sys_id=(select id from sys_info where sys_code=#{sysCode} )
+    </select>
+    
+    <!-- 根据系统id获取系统的预警配置信息 -->
+    <select id="findMesEarlyInfoBySysId" resultType="MesEarlyWarnInfo">
+    	<include refid="qrySelect"></include>
+    	from mes_early_warn_info
+    	<trim prefix="where" prefixOverrides="and | or">
+            <if test="sysId != null and sysId !=''">
+                and sys_id=#{sysId}
+            </if>
+        </trim>
+    </select>
+    
+    <insert id="insert" parameterType="MesEarlyWarnInfo" keyProperty="id" useGeneratedKeys="true" keyColumn="id">
+		
+		insert into mes_early_warn_info(description,flag,status,warn_count_min,warn_count_max,error_count_min,error_count_max,sys_id,busi_id,send_type,sys_child_active_threshold_max_count,sys_child_active_threshold_min_count,sys_req_apdex_threshold_max,sys_req_apdex_threshold_min) 
+		values(#{description},#{flag},#{status},#{warnCountMin},#{warnCountMax},#{errorCountMin},#{errorCountMax},#{sysId},#{busiId},#{sendType},#{sysChildActiveThresholdMaxCount},#{sysChildActiveThresholdMinCount},#{sysReqApdexThresholdMax},#{sysReqApdexThresholdMin})
+		
+	</insert>
+	
+    <update id="updateById">
+        update mes_early_warn_info 
+        <set>
+            <if test="description != null">
+                description=#{description},
+            </if>
+             <if test="flag != null">
+                flag=#{flag},
+            </if>
+             <if test="status != null">
+                status=#{status},
+            </if>
+             <if test="sendType != null">
+                send_Type=#{sendType},
+            </if>
+             <if test="warnCountMin != null">
+                warn_count_min=#{warnCountMin},
+            </if>
+             <if test="warnCountMax != null">
+                warn_count_max=#{warnCountMax},
+            </if>
+            <if test="errorCountMin != null">
+                error_count_min=#{errorCountMin},
+            </if>
+            <if test="errorCountMax != null">
+                error_count_max=#{errorCountMax},
+            </if>
+            <if test="sysId != null">
+                sys_id=#{sysId},
+            </if>
+            <if test="busiId != null">
+                busi_id=#{busiId},
+            </if>
+            <if test="sysChildActiveThresholdMaxCount != null">
+                sys_child_active_threshold_max_count=#{sysChildActiveThresholdMaxCount},
+            </if>
+            <if test="sysChildActiveThresholdMinCount != null">
+                sys_child_active_threshold_min_count=#{sysChildActiveThresholdMinCount},
+            </if>
+            <if test="sysReqApdexThresholdMax != null">
+                sys_req_apdex_threshold_max=#{sysReqApdexThresholdMax},
+            </if>
+            <if test="sysReqApdexThresholdMin != null">
+                sys_req_apdex_threshold_min=#{sysReqApdexThresholdMin},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+     <delete id="deleteById">
+        delete from mes_early_warn_info where id=#{id}
+    </delete>
+    
+    
+    <delete id="deleteEwSysRefById">
+    	delete from earlywarn_sys_ref where sys_id=#{sysId} and ew_id=#{ewId}
+    </delete>
+    <insert id="insertEwSysRef" >
+    	insert into earlywarn_sys_ref(sys_id,ew_id) 
+    	values(#{sysId},#{ewId})
+    </insert>
+    
+</mapper>

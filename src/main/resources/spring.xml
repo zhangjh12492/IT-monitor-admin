@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="GBK"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:websocket="http://www.springframework.org/schema/websocket"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd"
+       default-autowire="byName">
+
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.wfj.exception"/>
+    <context:component-scan base-package="com.wfj.mq"/>
+    <context:component-scan base-package="com.wfj.sysmanager"/>
+
+    <context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:netty.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:rabbitmq.properties" ignore-unresolvable="true"/>
+    
+    <bean id="configProperties"
+          class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:config.properties</value>
+                <value>classpath:netty.properties</value>
+                <value>classpath:rabbitmq.properties</value>
+                <value>classpath:jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+</beans>

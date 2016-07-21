@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PcdsSyuserSyrole">
+    <sql id="qrySelect">
+        select id id,
+			syrole_id syroleId,
+			syuser_id syuserId
+    </sql>
+
+    <select id="selectById" resultType="PcdsSyuserSyrole">
+        <include refid="qrySelect"/>
+        from PCDS_SYUSER_SYROLE
+        where
+        id=#{id}
+    </select>
+
+    <insert id="insert">
+        insert into PCDS_SYUSER_SYROLE (
+        	id,
+			syrole_id,
+			syuser_id
+            ) values (
+        	#{id,jdbcType=INTEGER},
+			#{syroleId,jdbcType=VARCHAR},
+			#{syuserId,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="updateById">
+        update PCDS_SYUSER_SYROLE
+        <set>
+            <if test="userGroupId != null">
+                user_group_id=#{userGroupId}
+            </if>
+            <if test="userType != null">
+                user_type=#{userType}
+            </if>
+            <if test="userInfoId != null">
+                user_info_id=#{userInfoId}
+            </if>
+            <if test="id != null">
+                id=#{id}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from PCDS_SYUSER_SYROLE where id=#{id}
+    </delete>
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="syroleId != null">
+                and syrole_id=#{syroleId}
+            </if>
+            <if test="syuserId != null">
+                and syuser_id=#{syuserId}
+            </if>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy$}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="PcdsSyuserSyrole">
+        <include refid="qrySelect"/>
+        from PCDS_SYUSER_SYROLE
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYUSER_SYROLE
+        <include refid="dynamicWhere"/>
+    </select>
+
+    <select id="selectUsersByRoleid" resultType="com.wfj.sysmanager.dto.RoleUserDto">
+        select psy.ID id,
+            psy.SYROLE_ID roleId,
+            psy.SYUSER_ID userId,
+            pr.TEXT roleName,
+            ps.user_name userName,
+            ps.name name
+        from PCDS_SYUSER_SYROLE psy
+        left join PCDS_SYUSER ps on psy.syuser_id = ps.id
+        left join PCDS_SYROLE pr on psy.syrole_id = pr.id
+        where
+          psy.SYROLE_ID=#{id}
+    </select>
+    <select id="selectUsersCountByRoleid" resultType="java.lang.Integer">
+        select count(1) as kk
+        from PCDS_SYUSER_SYROLE psy
+        left join PCDS_SYUSER ps on psy.syuser_id = ps.id
+        left join PCDS_SYROLE pr on psy.syrole_id = pr.id
+        where
+          psy.SYROLE_ID=#{id}
+    </select>
+
+    <select id="getNotExistUser" resultType="com.wfj.sysmanager.entity.PcdsSyuser2">
+        select ui.id id,
+            ui.name name,
+            ui.user_Name userName,
+            ui.tel tel,
+            ui.email email
+        from PCDS_SYUSER ui
+        left join PCDS_SYUSER_SYROLE pss on ui.id=pss.SYUSER_ID and pss.SYROLE_ID=#{groupId}
+        where pss.SYUSER_ID is null
+    </select>
+
+    <select id="getNotExistUserCount" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYUSER ui
+        left join PCDS_SYUSER_SYROLE pss on ui.id=pss.SYUSER_ID and pss.SYROLE_ID=#{groupId}
+        where pss.SYUSER_ID is null
+    </select>
+
+
+</mapper>

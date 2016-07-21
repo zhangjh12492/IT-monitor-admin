@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PcdsSyroleSymenus">
+    <sql id="qrySelect">
+        select id id,
+			role_id roleId,
+			menu_id menuId
+    </sql>
+
+    <select id="selectById" resultType="PcdsSyuserSyrole">
+        <include refid="qrySelect"/>
+        from PCDS_SYROLE_SYMENUS
+        where
+        id=#{id}
+    </select>
+
+    <insert id="insert">
+        insert into PCDS_SYROLE_SYMENUS (
+        	id,
+			role_id,
+			menu_id
+            ) values (
+        	#{id,jdbcType=VARCHAR},
+			#{roleId,jdbcType=VARCHAR},
+			#{menuId,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="updateById">
+        update PCDS_SYROLE_SYMENUS
+        <set>
+            <if test="userGroupId != null">
+                user_group_id=#{userGroupId}
+            </if>
+            <if test="userType != null">
+                user_type=#{userType}
+            </if>
+            <if test="userInfoId != null">
+                user_info_id=#{userInfoId}
+            </if>
+            <if test="id != null">
+                id=#{id}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from PCDS_SYROLE_SYMENUS where id=#{id}
+    </delete>
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="roleId != null">
+                and role_id=#{roleId}
+            </if>
+            <if test="menuId != null">
+                and menu_id=#{menuId}
+            </if>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy$}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="com.wfj.sysmanager.entity.PcdsSyroleSymenus">
+        <include refid="qrySelect"/>
+        from PCDS_SYROLE_SYMENUS
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYROLE_SYMENUS
+        <include refid="dynamicWhere"/>
+    </select>
+
+    <select id="selectMenusByRoleid" resultType="com.wfj.sysmanager.dto.RoleMenuDto">
+        select psy.ID id,
+            psy.ROLE_ID roleId,
+            psy.MENU_ID menuId,
+            pr.TEXT roleName,
+            ps.TEXT menuName
+        from PCDS_SYROLE_SYMENUS psy
+        left join PCDS_SYMENU ps on psy.menu_id = ps.id
+        left join PCDS_SYROLE pr on psy.role_id = pr.id
+        where
+          psy.ROLE_ID=#{id}
+    </select>
+    <select id="selectMenusCountByRoleid" resultType="java.lang.Integer">
+        select count(1) as kk
+        from PCDS_SYROLE_SYMENUS psy
+        left join PCDS_SYMENU ps on psy.menu_id = ps.id
+        left join PCDS_SYROLE pr on psy.role_id = pr.id
+        where
+          psy.ROLE_ID=#{id}
+    </select>
+
+    <select id="getNotExistMenu" resultType="com.wfj.sysmanager.dto.RoleMenuDto">
+        select ps.id id,
+            ps.text menuName,
+            ps.src src,
+            ps_2.TEXT parentMenuName
+        from PCDS_SYMENU ps
+        left join PCDS_SYMENU ps_2 on ps.PID=ps_2.ID
+        left join PCDS_SYROLE_SYMENUS pss on ps.id=pss.MENU_ID and pss.ROLE_ID=#{groupId}
+        where pss.MENU_ID is null
+        order by ps_2.TEXT
+    </select>
+
+    <select id="getNotExistMenuCount" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYMENU ps
+        left join PCDS_SYMENU ps_2 on ps.PID=ps_2.ID
+        left join PCDS_SYROLE_SYMENUS pss on ps.id=pss.MENU_ID and pss.ROLE_ID=#{groupId}
+        where pss.MENU_ID is null
+    </select>
+
+
+</mapper>

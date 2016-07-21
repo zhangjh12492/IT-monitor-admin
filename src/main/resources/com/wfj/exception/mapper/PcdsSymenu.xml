@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PcdsSymenu">
+    <sql id="qrySelect">
+        select id id,
+			pid pid,
+			text text,
+			src src
+    </sql>
+
+    <select id="selectById" resultType="PcdsSymenu">
+        <include refid="qrySelect"/>
+        from PCDS_SYMENU
+        where
+        id=#{id}
+    </select>
+
+    <sql id="dynamicWhere">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="id != null">
+                and id=#{id}
+            </if>
+            <if test="pid != null">
+                and pid=#{pid}
+            </if>
+            <if test="sendType != null">
+                and text=#{text}
+            </if>
+            <if test="id != null">
+                and src=#{src}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="dynamicOrderBy">
+        <trim prefix=" order by ">
+            ${orderBy}
+        </trim>
+    </sql>
+
+    <select id="selectByCond" resultType="PcdsSymenu">
+        <include refid="qrySelect"/>
+        from PCDS_SYMENU
+        <include refid="dynamicWhere"/>
+        <include refid="dynamicOrderBy"/>
+    </select>
+
+    <select id="selectCountByCond" resultType="Integer">
+        select count(1) as kk
+        from PCDS_SYMENU
+        <include refid="dynamicWhere"/>
+    </select>
+
+    <select id="selectMenuByUserid" resultType="PcdsSymenu">
+        select distinct ps.id id,
+        ps.pid pid,
+        ps.text text,
+        ps.src src
+        from PCDS_SYROLE_SYMENUS psy
+        left join PCDS_SYMENU ps on psy.MENU_ID=ps.ID
+        where psy.ROLE_ID in
+        (
+            select pss.ROLE_ID
+            from  PCDS_SYROLE_SYMENUS pss
+            left join PCDS_SYUSER_SYROLE pss2 on pss.ROLE_ID=pss2.SYROLE_ID
+            where pss2.SYUSER_ID=#{userId}
+        ) and ps.PID=#{pid}
+        order by ps.seq
+    </select>
+
+</mapper>

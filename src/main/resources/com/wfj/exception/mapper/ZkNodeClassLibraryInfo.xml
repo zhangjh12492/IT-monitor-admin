@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ZkNodeClassLibraryInfo">
+	<sql id="qrySelect">
+		select id id,
+			parent_name parentName,
+			node_name nodeName,
+			node_desc nodeDesc,
+			class_path classPath,
+			library_path libraryPath
+
+	</sql>
+	<insert id="insert" parameterType="ZkNodeClassLibraryInfo">
+		insert into zk_node_class_library_info
+		(parent_name,node_name,node_desc,class_path,library_path)
+		values(
+			#{parentName,jdbcType=VARCHAR},
+			#{nodeName,jdbcType=VARCHAR},
+			#{nodeDesc,jdbcType=VARCHAR},
+			#{classPath,jdbcType=VARCHAR},
+			#{libraryPath,jdbcType=VARCHAR})
+
+	</insert>
+
+	<select id="selectClassPathCountByAllCondition" resultType="java.lang.Integer">
+		select count(id) from zk_node_class_library_info
+		where parent_name=#{parentName} and node_name=#{nodeName}
+	</select>
+
+	<select id="selectClassPathByAllCondition" resultType="ZkNodeClassLibraryInfo">
+		<include refid="qrySelect"></include>
+		from zk_node_class_library_info
+		where parent_name=#{parentName} and node_name=#{nodeName}
+	</select>
+	
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BusiInfoTmp">
+	
+
+	<sql id="qrySelect">
+		select id id,
+			busi_code busiCode,
+			busi_desc busiDesc,
+			sys_code sysCode
+	</sql>
+	
+	<select id="selectAllBusiInfoTmp" resultType="BusiInfoTmp" >
+		select b.id id,b.busi_code busiCode,b.busi_desc busiDesc,b.sys_code sysCode from busi_info_tmp b
+
+	</select>
+
+	<delete id="deleteAllBusiInfoTmp">
+		delete from busi_info_tmp
+
+	</delete>
+	
+
+</mapper>

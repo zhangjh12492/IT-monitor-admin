@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd"
+       default-lazy-init="true">
+
+
+    <!-- 要调用的工作类 -->
+    <bean id="mesProcessResultQuartz" class="com.wfj.exception.quartz.MesProcessResultQuartz"/>
+    <!--定义调用对象和调用对象的方法 -->
+    <bean id="mesProcessResultSendSmsJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="concurrent" value="true"/>
+        <!-- 调用的类 -->
+        <property name="targetObject" ref="mesProcessResultQuartz"/>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod" value="mesProcessResultSendSms"/>
+    </bean>
+
+    <bean id="insertBusiByReduceJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="concurrent" value="true"/>
+        <!-- 调用的类 -->
+        <property name="targetObject" ref="mesProcessResultQuartz"/>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod" value="insertBusiByReduce"/>
+    </bean>
+
+    <!-- 定义触发时间 -->
+    <!--<bean id="outboundCallTime" class="org.springframework.scheduling.quartz.CronTriggerBean">-->
+    <bean id="mesProcessResultSendSmsTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="mesProcessResultSendSmsJob"/>
+        <!-- cron表达式 -->
+        <property name="cronExpression" value="0 0/5 * * * ?"/>
+    </bean>
+
+    <!--<bean id="outboundCallTime" class="org.springframework.scheduling.quartz.CronTriggerBean">-->
+    <bean id="insertBusiByReduceTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="insertBusiByReduceJob"/>
+        <!-- cron表达式 -->
+        <property name="cronExpression" value="0 0/5 * * * ?"/>
+    </bean>
+
+
+    <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序  -->
+    <bean id="startQuartz" lazy-init="false" autowire="no"
+          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="mesProcessResultSendSmsTime"/>
+                <ref bean="insertBusiByReduceTime"/>
+            </list>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EarlyWarnSysInfo">
+	
+	<insert id="insert" >
+		insert into earlywarn_sys_ref(sys_id,ew_id) values(#{sysId},#{ewId})
+	</insert>
+	
+	<delete id="deleteByAllId">
+		delete from earlywarn_sys_ref where sys_id=#{sysId} and ew_id=#{ewId}
+	</delete>
+</mapper>

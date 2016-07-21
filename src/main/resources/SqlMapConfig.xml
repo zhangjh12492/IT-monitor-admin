@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <!--<settings useStatementNamespaces="true"/>-->
+    <settings>
+        <!-- 这个配置使全局的映射器启用或禁用缓存 -->
+        <setting name="cacheEnabled" value="false" />
+        <!-- 允许 JDBC 支持生成的键。需要适合的驱动。如果设置为 true 则这个设置强制生成的键被使用，尽管一些驱动拒绝兼容但仍然有效（比如 Derby） -->
+        <setting name="useGeneratedKeys" value="true" />
+        <!-- 配置默认的执行器。SIMPLE 执行器没有什么特别之处。REUSE 执行器重用预处理语句。BATCH 执行器重用语句和批量更新  -->
+        <setting name="defaultExecutorType" value="REUSE" />
+        <!-- 全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载。 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 设置超时时间，它决定驱动等待一个数据库响应的时间。  -->
+        <setting name="defaultStatementTimeout" value="25000"/>
+    </settings>
+    <typeAliases>
+        <typeAlias alias="BusiInfo" type="com.wfj.exception.dal.entity.BusiInfo"/>
+        <typeAlias alias="BusiInfoTmp" type="com.wfj.exception.dal.entity.BusiInfoTmp"/>
+        <typeAlias alias="SmsConfigInfo" type="com.wfj.exception.dal.entity.SmsConfigInfo"/>
+        <typeAlias alias="MailConfigInfo" type="com.wfj.exception.dal.entity.MailConfigInfo"/>
+        <typeAlias alias="SysInfo" type="com.wfj.exception.dal.entity.SysInfo"/>
+        <typeAlias alias="UserInfo" type="com.wfj.exception.dal.entity.UserInfo"/>
+        <typeAlias alias="BusiSysInfo" type="com.wfj.exception.dal.entity.BusiSysInfo"/>
+        <typeAlias alias="UserBusiInfo" type="com.wfj.exception.dal.entity.UserBusiInfo"/>
+        <typeAlias alias="UserSysInfo" type="com.wfj.exception.dal.entity.UserSysInfo"/>
+        <typeAlias alias="LimitPageMap" type="com.wfj.exception.dal.util.LimitPageMap"/>
+        <typeAlias alias="UserGroup" type="com.wfj.exception.dal.entity.UserGroup"/>
+        <typeAlias alias="MesEarlyWarnInfo" type="com.wfj.exception.dal.entity.MesEarlyWarnInfo"/>
+        <typeAlias alias="UserGroupUserInfoRef" type="com.wfj.exception.dal.entity.UserGroupUserInfoRef"/>
+        <typeAlias alias="PcdsSymenu" type="com.wfj.exception.dal.entity.PcdsSymenu"/>
+        <typeAlias alias="EarlyWarnSysInfo" type="com.wfj.exception.dal.entity.EarlyWarnSysInfo"/>
+        <typeAlias alias="BusiInfoUserGroupRef" type="com.wfj.exception.dal.entity.BusiInfoUserGroupRef"/>
+        <typeAlias alias="SysInfoUserGroupRef" type="com.wfj.exception.dal.entity.SysInfoUserGroupRef"/>
+        <typeAlias alias="MesAllProcessReq" type="com.wfj.exception.dal.entity.MesAllProcessReq"/>
+        <typeAlias alias="MesProcessTrack" type="com.wfj.exception.dal.entity.MesProcessTrack"/>
+        <typeAlias alias="ZkNodeDataInfo" type="com.wfj.exception.dal.entity.ZkNodeDataInfo"/>
+        <typeAlias alias="ZkNodeClassLibraryInfo" type="com.wfj.exception.dal.entity.ZkNodeClassLibraryInfo"/>
+
+        <typeAlias alias="Syuser" type="com.wfj.sysmanager.model.Syuser"/>
+        <typeAlias alias="PcdsSymenu2" type="com.wfj.sysmanager.entity.PcdsSymenu2"/>
+        <typeAlias alias="PcdsSyrole" type="com.wfj.sysmanager.entity.PcdsSyrole"/>
+        <typeAlias alias="PcdsSyuser2" type="com.wfj.sysmanager.entity.PcdsSyuser2"/>
+        <typeAlias alias="PcdsSyresources" type="com.wfj.sysmanager.entity.PcdsSyresources"/>
+        <typeAlias alias="PcdsSyuserSyrole" type="com.wfj.sysmanager.entity.PcdsSyuserSyrole"/>
+        <typeAlias alias="PcdsSyroleSymenus" type="com.wfj.sysmanager.entity.PcdsSyroleSymenus"/>
+        <typeAlias alias="PcdsSyroleSyresources" type="com.wfj.sysmanager.entity.PcdsSyroleSyresources"/>
+
+    </typeAliases>
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageHelper">
+            <property name="dialect" value="mysql"/>
+            <property name="offsetAsPageNum" value="false"/>
+            <property name="rowBoundsWithCount" value="false"/>
+        </plugin>
+    </plugins>
+    <mappers>
+        <mapper resource="com/wfj/exception/mapper/BusiInfo.xml"/>
+        <mapper resource="com/wfj/exception/mapper/BusiInfoTmp.xml"/>
+        <mapper resource="com/wfj/exception/mapper/MailConfigInfo.xml"/>
+        <mapper resource="com/wfj/exception/mapper/SmsConfigInfo_.xml"/>
+        <mapper resource="com/wfj/exception/mapper/SysInfo.xml"/>
+        <mapper resource="com/wfj/exception/mapper/UserGroup.xml"/>
+        <mapper resource="com/wfj/exception/mapper/UserInfo.xml"/>
+        <mapper resource="com/wfj/exception/mapper/Syuser.xml"/>
+        <mapper resource="com/wfj/exception/mapper/ZkNodeDataInfo.xml"/>
+        <mapper resource="com/wfj/exception/mapper/ZkNodeClassLibraryInfo.xml"/>
+        <mapper resource="com/wfj/exception/mapper/UserGroupUserInfoRef.xml"/>
+        <mapper resource="com/wfj/exception/mapper/PcdsSymenu.xml"/>
+        <mapper resource="com/wfj/exception/mapper/MesEarlyWarnInfo.xml"/>
+        <mapper resource="com/wfj/exception/mapper/MesAllProcessReq.xml"/>
+        <mapper resource="com/wfj/exception/mapper/EarlyWarnSysInfo.xml"/>
+        <mapper resource="com/wfj/exception/mapper/MesProcessTrack.xml"/>
+        <mapper resource="com/wfj/exception/mapper/BusiInfoUserGroupRef.xml"/>
+        <mapper resource="com/wfj/exception/mapper/SysInfoUserGroupRef.xml"/>
+        <mapper resource="com/wfj/sysmanager/mapper/PcdsSymenu2.xml"/>
+        <mapper resource="com/wfj/sysmanager/mapper/PcdsSyrole.xml"/>
+        <mapper resource="com/wfj/sysmanager/mapper/PcdsSyuser2.xml"/>
+        <mapper resource="com/wfj/sysmanager/mapper/PcdsSyresources.xml"/>
+        <mapper resource="com/wfj/sysmanager/mapper/PcdsSyuserSyrole.xml"/>
+        <mapper resource="com/wfj/sysmanager/mapper/PcdsSyroleSymenus.xml"/>
+        <mapper resource="com/wfj/sysmanager/mapper/PcdsSyroleSyresources.xml"/>
+    </mappers>
+</configuration>
